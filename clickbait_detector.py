@@ -6,30 +6,34 @@ nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 import string
-import re
-import urllib.request
 import numpy as np
 from nltk.corpus import stopwords
 from collections import Counter
-from sklearn import preprocessing
 from sklearn.model_selection import cross_val_score
-from sklearn.naive_bayes import MultinomialNB, BernoulliNB, ComplementNB
-from nltk.translate.ibm_model import Counts
+from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 
 
 # stopwords, interrogative words, and punctuation
 stopwords = set(stopwords.words('english')) 
 punctuation = set(string.punctuation + '’') 
-q_words = ['what', 'which', 'when', 'where', 'who', 'whom', 'whose', 'why', 'whether', 'how']
+q_words = ['what', 'which', 'when', 'where', 'who', 'whom', 'whose', 'why', 'whether', 'how', 'did', 'does', 'have', 'has', 'had', 'is', 'was', 'were']
+interrogatives = ['what', 'which', 'when', 'where', 'who', 'whom', 'whose', 'why', 'whether', 'how']
 
 # assigns data to variables
-non_clickbait_url = "http://www.cs.columbia.edu/~sarahita/CL/non_clickbait_data.txt"
-clickbait_url = "http://www.cs.columbia.edu/~sarahita/CL/clickbait_data.txt"
+non_clickbait = "non_clickbait_data.txt"
+clickbait = "clickbait_data.txt"
 
-# reads url .txt file into string "data"
-def get_data(url):
-  data = urllib.request.urlopen(url).read().decode('utf-8')
-  return data
+# reads .txt file into a list of strings
+def get_data(path):
+    list_of_lines = []
+    with open(path, 'r') as source:
+        for line in source:
+            line = line.rstrip()
+            if line == False:
+                continue
+            else:
+                list_of_lines.append(line)
+    return list_of_lines
 
 
 def stop_words(headlines):
@@ -203,7 +207,7 @@ def q_words_counts(headlines):
     for headline in headlines:
         q_word_counts = []
         tokenized = nltk.word_tokenize(headline.lower())
-        for q_word in q_words:
+        for q_word in interrogatives:
             q_count = tokenized.count(q_word)
             q_word_counts.append(q_count)
         bow.append(q_word_counts)
@@ -220,7 +224,7 @@ def questions(headlines):
         is_q = 0
         tokenized = nltk.word_tokenize(headline.lower())
         for q_word in q_words:
-            if tokenized[0] == q_word:
+            if tokenized[0] == q_word and tokenized[-1] == '?':
                 is_q = 1
             else:
                 is_q = 0
@@ -247,12 +251,8 @@ def score_b(data, target):
 
 
 def main():
-    non_clickbait_data = get_data(non_clickbait_url) # string
-    clickbait_data = get_data(clickbait_url) # string
-
-    # combines clickbait and non-clickbait data in a single list
-    non_clickbait_headlines = non_clickbait_data.rstrip('\n').split('\n') # list1
-    clickbait_headlines = clickbait_data.rstrip('\n').split('\n') # list2
+    non_clickbait_headlines = get_data(non_clickbait) # list
+    clickbait_headlines = get_data(clickbait) # list
     all_headlines = non_clickbait_headlines + clickbait_headlines
 
     # create a list of corresponding labels
