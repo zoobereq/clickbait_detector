@@ -11,9 +11,9 @@ The code is informed by [the paper](https://arxiv.org/pdf/1610.09786.pdf) by Cha
 - **Stop words:** counts for each function word (from the NLTK stopwords list)
 - **Syntactic:**  counts for the following 10 common POS tags: `['NN', 'NNP', 'DT', 'IN', 'JJ', 'NNS','CC','PRP','VB','VBG']`
 - **Lexical:** counts for 30 most common unigrams in the entire corpus
-- **Punctuation:**  Counts for each punctuation mark in `string.punctuation`
+- **Punctuation:**  counts for each punctuation mark in `string.punctuation`
 - **Complexity:** 
-    - average number of characters per word
+    - Average number of characters per word
     - Type-to-token ratio (the number of unique words / the total number of words)
     - Count of *long* words - words with at least 6 letters
 - **Interrogative words:** counts of the common English interrogatives
